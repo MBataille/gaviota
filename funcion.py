@@ -5,28 +5,27 @@ import numpy as np
 #y asignandolo a una variable que luego sería la entrada de la función crear_desde_stl
 
 class objeto():
-    def __init__(self,malla):
+    def __init__(self,malla,color):
         self.tris=[]
         self.I=malla.get_mass_properties()[2]
         self.v0=malla.v0
         self.v1=malla.v1
         self.v2=malla.v2
+        self.color = color
         self.normales=malla.normals
-
         self.init_pos(vector(malla.get_mass_properties()[1][0],malla.get_mass_properties()[1][1],malla.get_mass_properties()[1][2]))
-
-
 
     def init_pos(self,v):
         '''vector de vpython entra, actualiza pos cdg'''
         self.cdg=v
-
-
         for n in range(len(self.v1)):
             normalActual = vec(self.normales[n][0], self.normales[n][1], self.normales[n][2])
             a = vertex(pos=vec(self.v0[n][0] - self.cdg.x, self.v0[n][1] - self.cdg.y, self.v0[n][2] - self.cdg.z),color=color.red, normal=normalActual)
             b = vertex(pos=vec(self.v1[n][0] - self.cdg.x, self.v1[n][1] - self.cdg.y, self.v1[n][2] - self.cdg.z),color=color.red, normal=normalActual)
             c = vertex(pos=vec(self.v2[n][0] - self.cdg.x, self.v2[n][1] - self.cdg.y, self.v2[n][2] - self.cdg.z),color=color.red, normal=normalActual)
+            a.color = self.color
+            b.color = self.color
+            c.color = self.color
             self.tris.append(triangle(vs=[a,b,c]))  # esto toma los vertex para hacer un triangulo y los agrega a la lista que originalmente estaba vacía
 
     def set_pos(self,v):

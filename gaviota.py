@@ -1,6 +1,22 @@
 from vpython import *
 import numpy as np
 
+scene.title = "<b>A bird is flying</b></n>\n"
+#Ajustamos tamaño de pantalla
+scene.width = 640
+scene.height = 600
+scene.forward = vector(0,-.3,-1)
+
+running=True
+
+def Run(b):
+    global running
+    running = not running
+    if running: b.text = "Pause"
+    else: b.text = "Run"
+
+button(text="Pause", pos=scene.title_anchor, bind=Run)
+
 #Parametros base
 r = 2
 omega = 5
@@ -8,15 +24,9 @@ t = np.linspace(0,10,1001)
 v_z = 0.5
 beta = np.pi/4
 
-scene.title = "<b>A bird is flying</b></n>"
-#Ajustamos tamaño de pantalla
-scene.width = 640
-scene.height = 600
-scene.forward = vector(0,-.3,-1)
-
 # Pajaro creado
 gaviota = sphere(pos=vector(r,0,0), radius=r/10, color=color.cyan,
-		make_trail=True, interval=1)
+		make_trail=True, interval=4,trail_type='points')
 
 #Vectores unitarios
 x_i = arrow(pos=vector(0,0,0), axis=vector(1,0,0), color=color.red, shaftwidth=0.05)
@@ -42,16 +52,18 @@ txt_Larr = text(text='L', pos=Larr.pos+Larr.axis, axis=Larr.axis, align='center'
 scene.autoscale = True
 
 # aqui escribimos la descripcion del video
-scene.append_to_caption("""Una gaviota puede planear, a pesar de la gravedad,
-gracias a una fuerza de origen aerodinamico, conocida como fuerza de sustentacion, L.
-El movimiento es descrito en esta representacion visual""")
+scene.append_to_caption(
+"""\n	Una gaviota puede planear, a pesar de la gravedad, 
+	gracias a una fuerza de origen aerodinamico, 
+	conocida como fuerza de sustentacion, L.
+	El movimiento es descrito en esta representacion visual""")
 
 
 while True:
 	for this_t in t:
-		'''Actualiza la posicion de la gaviota
-		y la direccion de los vectores unitarios r, theta'''
-		rate(60)  # Espera 1/60 s para que no se vea tan rapido
+		#Actualiza la posicion de la gaviota
+		#y la direccion de los vectores unitarios r, theta
+		rate(50)  # Espera 1/60 s para que no se vea tan rapido
 		theta = omega*this_t
 
 		# actualiza la direccion de r y theta
@@ -67,4 +79,4 @@ while True:
 		txt_rarr.pos = rarr.pos+rarr.axis
 		txt_tarr.pos = tarr.pos+tarr.axis
 		txt_Larr.pos = Larr.pos+Larr.axis
-	res = input('Press any key to reset')
+	reset = input('Press any key to reset')

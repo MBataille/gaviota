@@ -1,11 +1,13 @@
 from vpython import *
 import numpy as np
+from funcion import objeto
+from stl import mesh
 
 #Parametros base
-r = 2
+r = 50
 omega = 5
 t = np.linspace(0,10,1001)
-v_z = 0.5
+v_z = r/10	
 beta = np.pi/4
 
 scene.title = "<b>A bird is flying</b></n>"
@@ -15,25 +17,29 @@ scene.height = 600
 scene.forward = vector(0,-.3,-1)
 
 # Pajaro creado
-gaviota = sphere(pos=vector(r,0,0), radius=r/10, color=color.cyan,
-		make_trail=True, interval=1)
+gaviota = objeto(mesh.Mesh.from_file('bird.stl'))
+gaviota.set_pos(vector(r,0,2*r))
+gaviota.rotar_x(np.pi,gaviota.cdg)
+gaviota.rotar_y(np.pi-beta,gaviota.cdg)
+gaviota2 = sphere(pos=gaviota.cdg, radius=r/100, color=color.red,
+		make_trail=True, interval=1)	
 
 #Vectores unitarios
-x_i = arrow(pos=vector(0,0,0), axis=vector(1,0,0), color=color.red, shaftwidth=0.05)
-y_j = arrow(pos=vector(0,0,0), axis=vector(0,1,0), color=color.blue, shaftwidth=0.05)
-z_k = arrow(pos=vector(0,0,0), axis=vector(0,0,1), color=color.green, shaftwidth=0.05)
+x_i = arrow(pos=vector(0,0,0), axis=vector(1,0,0)*r/4, color=color.red)
+y_j = arrow(pos=vector(0,0,0), axis=vector(0,1,0)*r/4, color=color.blue)
+z_k = arrow(pos=vector(0,0,0), axis=vector(0,0,1)*r/4, color=color.green)
 
 #Vectores de trayectoria con sus respectivas letras
-rarr = arrow(pos=gaviota.pos, axis=vector(1,0,0), color=color.magenta, shaftwidth=0.05)
+rarr = arrow(pos=gaviota.cdg, axis=vector(1,0,0), color=color.magenta)
 txt_rarr = text(text='n', pos=rarr.pos+rarr.axis, axis=rarr.axis, align='center', height=0.4,
           color=color.magenta, billboard=True, emissive=True)
 
-tarr = arrow(pos=gaviota.pos, axis=vector(0,1,0), color=color.white, shaftwidth=0.05)
+tarr = arrow(pos=gaviota.cdg, axis=vector(0,1,0)*r/4, color=color.white)
 txt_tarr = text(text='t', pos=tarr.pos+tarr.axis, axis=tarr.axis, align='center', height=0.4,
           color=color.white, billboard=True, emissive=True)
 
-Larr = arrow(pos=gaviota.pos, axis=np.sin(beta)*rarr.axis
-								+np.cos(beta)*z_k.axis, shaftwidth=0.05,
+Larr = arrow(pos=gaviota.cdg, axis=np.sin(beta)*rarr.axis
+								+np.cos(beta)*z_k.axis,
 			color=color.orange)
 txt_Larr = text(text='L', pos=Larr.pos+Larr.axis, axis=Larr.axis, align='center', height=0.4,
           color=color.orange, billboard=True, emissive=True)
@@ -60,8 +66,11 @@ while True:
 		Larr.axis = -np.sin(beta)*rarr.axis + np.cos(beta)*z_k.axis	
 
 		# actualiza la direccion de r, theta y la gaviota
-		Larr.pos = rarr.pos = tarr.pos = gaviota.pos = vector(r*np.cos(theta), r*np.sin(theta),
-			v_z*this_t)
+		Larr.pos = rarr.pos = tarr.pos  = gaviota2.pos = vector(r*np.cos(theta), r*np.sin(theta),
+			2*r-v_z*this_t)
+
+		gaviota.rotar_z(omega*(t[1]-t[0]), vector(0,0,0))
+		gaviota.set_pos(gaviota.cdg+vector(0,0,-v_z*t[1]-t[0]))		
 			
 		#generamos las letras
 		txt_rarr.pos = rarr.pos+rarr.axis
